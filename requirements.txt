@@ -3,3 +3,4 @@ vega-datasets
 pandas
 streamlit
 datetime
+openpyxl
