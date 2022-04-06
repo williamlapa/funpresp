@@ -15,7 +15,7 @@ SPREADSHEET_ID = "1XUIUWzHTXpCy7XMBpe5zBaQUpAQqdy27kbbC-Dooh3w/edit?usp=sharing"
 SHEET_NAME = "Database"
 GSHEET_URL = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}"
 
-@st.experimental_singleton()
+@st.experimental_singleton() #não esta localizando esse modulo, problema no streamlit
 def connect():
     # Create a connection object.
     credentials = service_account.Credentials.from_service_account_info(
