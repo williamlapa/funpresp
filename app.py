@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import date, datetime
 import chart
+import requests
+from bs4 import BeautifulSoup
 
 COMMENT_TEMPLATE_MD = """{} - {}
 > {}"""
@@ -27,7 +29,13 @@ def get_data_from_excel():
               "Unnamed: 4", 
               "Unnamed: 5"
               ]
-    link = "https://www.funpresp.com.br/wp-content/uploads/2021/11/Historico-de-Cotas-2022-4.xlsx"
+    resposta = requests.get('https://www.funpresp.com.br/fique-por-dentro/cotas/')
+    soup = BeautifulSoup(resposta.text, 'html.parser')
+
+    for i in soup.find_all('a'):
+        # Testa se a palavra Historico está nos hiperlinks do excel obtidos na página e atribui variável link:
+        if 'Historico' in i.get('href'):
+          link = i.get('href')
 
     df_exec = pd.read_excel(link, 
               sheet_name='cotas plano Executivo', 
