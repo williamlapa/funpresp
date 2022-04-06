@@ -5,4 +5,4 @@ streamlit
 datetime
 openpyxl
 requests
-BeautifulSoup
+BeautifulSoup4
