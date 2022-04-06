@@ -6,3 +6,6 @@ datetime
 openpyxl
 requests
 BeautifulSoup4
+google-api-python-client
+google-auth
+google-auth-httplib2
