@@ -1,18 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 
-headers = {'User-Agent': 'Mozilla/5.0'}
-
-resposta = requests.get('https://www.funpresp.com.br/fique-por-dentro/cotas/', headers=headers)
+resposta = requests.get('https://www.funpresp.com.br/fique-por-dentro/cotas/')
 
 soup = BeautifulSoup(resposta.text, 'html.parser')
 
-#print(soup.prettify())
-
-links = soup.find_all('a')
-
-for link in soup.find_all('a'):
-    print(link.get('href'))
-    link.get('href').split('.')
-
-pass
+for i in soup.find_all('a'):
+    # Testa se a palavra Historico está nos hiperlinks do excel obtidos na página e atribui variável link:
+    if 'Historico' in i.get('href'):
+      link = i.get('href')
