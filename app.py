@@ -4,6 +4,7 @@ from datetime import date, datetime
 import chart
 import requests
 from bs4 import BeautifulSoup
+import db
 
 COMMENT_TEMPLATE_MD = """{} - {}
 > {}"""
@@ -73,9 +74,6 @@ df_total = get_data_from_excel()
 
 plano = st.radio('Escolha o plano:', df_total["plano"].unique())
 
-#start_data, final_data = st.select_slider('Escolha o período: ', options=[int(df_total.Data.dt.year.unique().min()), int(df_total.Data.dt.year.unique().max())], value=(int(df_total.Data.dt.year.min()), int(df_total.Data.dt.year.max())))
-#start_data, final_data = st.select_slider('Escolha o período: ', options=[2018,2022], value=(2018,2022))
-
 values = st.slider('Escolha o período: ',
      int(df_total.Data.dt.year.unique().min()), int(df_total.Data.dt.year.unique().max()), 
      (int(df_total.Data.dt.year.unique().min()), int(df_total.Data.dt.year.unique().max())))
@@ -91,7 +89,7 @@ symbols = st.multiselect("Escolha o perfil para visualização", all_symbols, al
 
 space(1)
 
-# Criar grafico- AQUI É O PROBLEMA, DADOS EM COLUNA QUANDO DEVERIAM ESTAR EM LINHA
+# Criar grafico
 
 source = source[source.Perfil.isin(symbols)]
 chart = chart.get_chart(source, plano)
@@ -99,3 +97,38 @@ st.altair_chart(chart, use_container_width=True)
 
 space(2)
 
+# Comments part
+
+conn = db.connect()
+comments = db.collect(conn)
+
+with st.expander("💬 Open comments"):
+
+    # Show comments
+
+    st.write("**Comments:**")
+
+    for index, entry in enumerate(comments.itertuples()):
+        st.markdown(COMMENT_TEMPLATE_MD.format(entry.name, entry.date, entry.comment))
+
+        is_last = index == len(comments) - 1
+        is_new = "just_posted" in st.session_state and is_last
+        if is_new:
+            st.success("☝️ Your comment was successfully posted.")
+
+    space(2)
+
+    # Insert comment
+
+    st.write("**Add your own comment:**")
+    form = st.form("comment")
+    name = form.text_input("Name")
+    comment = form.text_area("Comment")
+    submit = form.form_submit_button("Add comment")
+
+    if submit:
+        date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        db.insert(conn, [[name, comment, date]])
+        if "just_posted" not in st.session_state:
+            st.session_state["just_posted"] = True
+        st.experimental_rerun()
