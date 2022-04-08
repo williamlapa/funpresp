@@ -9,3 +9,5 @@ BeautifulSoup4
 google-api-python-client
 google-auth
 google-auth-httplib2
+gspread
+oauth2client
